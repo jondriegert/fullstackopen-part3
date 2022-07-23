@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 
-const randomLimit = parseInt(MAX_SAFE_INTEGER / 2);
+const randomLimit = parseInt(Number.MAX_SAFE_INTEGER / 10);
 
 app.use(express.json());
 
@@ -63,10 +63,10 @@ app.delete('/api/persons/:id', (request, response) => {
 });
 
 const generateId = () => {
-  let newID;
+  let newId;
   do {
-    newID = Math.floor(Math.random() * randomLimit);
-  } while (!persons.some((p) => p.id === newId);
+    newId = Math.floor(Math.random() * randomLimit);
+  } while (persons.some((p) => p.id === newId));
 
   return newId;
 };
@@ -74,22 +74,21 @@ const generateId = () => {
 app.post('/api/persons', (request, response) => {
   const body = request.body;
 
-  if (!body.content) {
+  if (!body.name) {
     return response.status(400).json({
-      error: 'content missing',
+      error: 'name missing',
     });
   }
 
   const person = {
-    content: body.content,
-    important: body.important || false,
-    date: new Date(),
     id: generateId(),
+    name: body.name,
+    number: body.number,
   };
 
-  notes = notes.concat(note);
+  persons = persons.concat(person);
 
-  response.json(note);
+  response.json(person);
 });
 
 const PORT = 3001;
