@@ -4,7 +4,19 @@ const morgan = require('morgan');
 
 const randomLimit = parseInt(Number.MAX_SAFE_INTEGER / 10);
 
-app.use(morgan('tiny'));
+morgan.token('postdata', function (req, res) {
+  if (!req || !req.headers || req.method !== 'POST') {
+    return ' ';
+  }
+
+  return JSON.stringify(req.body);
+});
+
+app.use(
+  morgan(
+    ':method :url :status :res[content-length] - :response-time ms :postdata'
+  )
+);
 
 app.use(express.json());
 
