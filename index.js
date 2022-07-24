@@ -5,6 +5,8 @@ const cors = require('cors');
 
 const randomLimit = parseInt(Number.MAX_SAFE_INTEGER / 10);
 
+app.use(express.static('build'));
+
 morgan.token('postdata', function (req, res) {
   if (!req || !req.headers || req.method !== 'POST') {
     return ' ';
