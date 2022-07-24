@@ -4,7 +4,7 @@ const morgan = require('morgan');
 
 const randomLimit = parseInt(Number.MAX_SAFE_INTEGER / 10);
 
-app.use(morgan('combined'));
+app.use(morgan('tiny'));
 
 app.use(express.json());
 
