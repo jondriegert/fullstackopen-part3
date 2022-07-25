@@ -61,23 +61,41 @@ app.get('/api/persons', (request, response) => {
   });
 });
 
-app.get('/info', (request, response) => {
-  console.log(request);
-  response.send(
-    `<div>Phonebook has info for ${
-      persons.length
-    } people</div><br><div>${Date()}</div>`
-  );
+app.get('/info', (request, response, next) => {
+  Person.countDocuments({})
+    .then((count) => {
+      response.send(
+        `<div>Phonebook has info for ${count} people</div><br><div>${Date()}</div>`
+      );
+    })
+    .catch((error) => next(error));
 });
 
-app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id);
-  const person = persons.find((p) => p.id === id);
-  if (person) {
-    response.json(person);
-  } else {
-    response.status(404).end();
-  }
+app.get('/api/persons/:id', (request, response, next) => {
+  Person.findById(request.params.id)
+    .then((person) => {
+      if (person) {
+        response.json(person);
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch((error) => next(error));
+});
+
+app.put('/api/persons/:id', (request, response, next) => {
+  const body = request.body;
+
+  const person = {
+    name: body.name,
+    number: body.number,
+  };
+
+  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+    .then((updatedPerson) => {
+      response.json(updatedPerson);
+    })
+    .catch((error) => next(error));
 });
 
 app.delete('/api/persons/:id', (request, response, next) => {
