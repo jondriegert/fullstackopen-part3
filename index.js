@@ -7,11 +7,11 @@ const cors = require('cors');
 
 const Person = require('./models/person');
 
-const randomLimit = parseInt(Number.MAX_SAFE_INTEGER / 10);
+// const randomLimit = parseInt(Number.MAX_SAFE_INTEGER / 10);
 
 app.use(express.static('build'));
 
-morgan.token('postdata', function (req, res) {
+morgan.token('postdata', function (req) {
   if (!req || !req.headers || req.method !== 'POST') {
     return ' ';
   }
@@ -28,34 +28,34 @@ app.use(
 app.use(express.json());
 app.use(cors());
 
-let persons = [
-  {
-    id: 1,
-    name: 'Arto Hellas',
-    number: '040-123456',
-  },
-  {
-    id: 2,
-    name: 'Ada Lovelace',
-    number: '39-44-5323523',
-  },
-  {
-    id: 3,
-    name: 'Dan Abramov',
-    number: '12-43-234345',
-  },
-  {
-    id: 4,
-    name: 'Mary Poppendieck',
-    number: '39-23-6423122',
-  },
-];
+// let persons = [
+//   {
+//     id: 1,
+//     name: 'Arto Hellas',
+//     number: '040-123456',
+//   },
+//   {
+//     id: 2,
+//     name: 'Ada Lovelace',
+//     number: '39-44-5323523',
+//   },
+//   {
+//     id: 3,
+//     name: 'Dan Abramov',
+//     number: '12-43-234345',
+//   },
+//   {
+//     id: 4,
+//     name: 'Mary Poppendieck',
+//     number: '39-23-6423122',
+//   },
+// ];
 
-app.get('/', (request, response, next) => {
+app.get('/', (request, response) => {
   response.send('<h1>phonebook backend</h1>');
 });
 
-app.get('/api/persons', (request, response) => {
+app.get('/api/persons', (request, response, next) => {
   Person.find({})
     .then((persons) => {
       response.json(persons);
@@ -104,20 +104,20 @@ app.put('/api/persons/:id', (request, response, next) => {
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
-    .then((result) => {
+    .then(() => {
       response.status(204).end();
     })
     .catch((error) => next(error));
 });
 
-const generateId = () => {
-  let newId;
-  do {
-    newId = Math.floor(Math.random() * randomLimit);
-  } while (persons.some((p) => p.id === newId));
+// const generateId = () => {
+//   let newId;
+//   do {
+//     newId = Math.floor(Math.random() * randomLimit);
+//   } while (persons.some((p) => p.id === newId));
 
-  return newId;
-};
+//   return newId;
+// };
 
 app.post('/api/persons', (request, response, next) => {
   const body = request.body;

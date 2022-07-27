@@ -23,8 +23,8 @@ const Person = mongoose.model('Person', personSchema);
 
 mongoose
   .connect(url)
-  .then((result) => {
-    if (argLength == 3) {
+  .then(() => {
+    if (argLength === 3) {
       console.log('phonebook:');
       Person.find({}).then((result) => {
         result.forEach((person) => {
@@ -41,7 +41,7 @@ mongoose
         number: argNumber,
       });
 
-      person.save().then((result) => {
+      person.save().then(() => {
         console.log('person saved!');
         mongoose.connection.close();
       });
