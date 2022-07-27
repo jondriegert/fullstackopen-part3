@@ -51,14 +51,16 @@ let persons = [
   },
 ];
 
-app.get('/', (request, response) => {
+app.get('/', (request, response, next) => {
   response.send('<h1>phonebook backend</h1>');
 });
 
 app.get('/api/persons', (request, response) => {
-  Person.find({}).then((persons) => {
-    response.json(persons);
-  });
+  Person.find({})
+    .then((persons) => {
+      response.json(persons);
+    })
+    .catch((error) => next(error));
 });
 
 app.get('/info', (request, response, next) => {
@@ -91,7 +93,9 @@ app.put('/api/persons/:id', (request, response, next) => {
     number: body.number,
   };
 
-  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+  const opts = { runValidators: true, new: true };
+
+  Person.findByIdAndUpdate(request.params.id, person, opts)
     .then((updatedPerson) => {
       response.json(updatedPerson);
     })
@@ -115,7 +119,7 @@ const generateId = () => {
   return newId;
 };
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body;
 
   if (!body.name || body.name === '') {
@@ -141,16 +145,25 @@ app.post('/api/persons', (request, response) => {
     number: body.number,
   });
 
-  person.save().then((savedPerson) => {
-    response.json(savedPerson);
-  });
+  person
+    .save()
+    .then((savedPerson) => {
+      response.json(savedPerson);
+    })
+    .catch((error) => next(error));
 });
 
 const errorHandler = (error, request, response, next) => {
   console.error(error.name);
 
+  console.log('ERROR CAUGHT');
+
+  console.error(error.name);
+
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' });
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message });
   }
 
   next(error);
